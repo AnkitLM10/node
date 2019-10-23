@@ -1,0 +1,110 @@
+var express=require('express');
+var app=express();
+var bodyParser = require("body-parser");
+app.set('view engine', 'ejs');
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
+var fs = require('fs');
+const axios = require('axios');
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0
+var request = require('request');
+var cheerio = require('cheerio');
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+var uri = 'https://www.stopstalk.com/contests';
+axios.get(uri)
+.then(response=>{
+  const html = response.data;
+var $ = cheerio.load(html);
+
+
+
+$('tr').filter(function(){
+
+
+
+if($(this).children(':nth-child('+6+')').children(':nth-child('+1+')').attr('data-tooltip')==='Set Reminder to Google Calendar')
+{
+var dateString =  $(this).children(':nth-child('+3+')').text();
+ dateTimeParts = dateString.split(' '),
+    timeParts = dateTimeParts[1].split(':'),
+    dateParts = dateTimeParts[0].split('-'),
+
+
+date = new Date(dateParts[0], parseInt(dateParts[1], 10) - 1, dateParts[2], timeParts[0], timeParts[1]);
+//console.log(new Date().getTime());
+//console.log(date.getTime()); //1379426880000
+//console.log(date)
+
+var difference = date.getTime() - new Date().getTime();
+
+        var daysDifference = Math.floor(difference/1000/60/60/24);
+        difference -= daysDifference*1000*60*60*24
+
+       var hoursDifference = Math.floor(difference/1000/60/60);
+        difference -= hoursDifference*1000*60*60
+
+        var minutesDifference = Math.floor(difference/1000/60);
+        difference -= minutesDifference*1000*60
+
+        var secondsDifference = Math.floor(difference/1000);
+
+	 
+	if(daysDifference<=2)
+	{
+		//here goes the code.............
+		console.log( $(this).children(':nth-child('+1+')').text());
+console.log(  $(this).children(':nth-child('+2+')').children(':nth-child('+1+')').attr('title'));
+console.log($(this).children(':nth-child('+3+')').text());
+     console.log('difference = ' + daysDifference + ' day/s ' + hoursDifference + ' hour/s ' + minutesDifference + ' minute/s ' + secondsDifference + ' second/s ');
+
+	}		
+	 
+     console.log();
+}
+
+
+
+
+
+
+
+
+
+});
+
+
+
+
+
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var server=app.listen(3000);
